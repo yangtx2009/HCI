@@ -1,0 +1,137 @@
+<html>
+<head>
+<title>Human Capabilities - Reaction test</title> </head>
+<body onload="draw();">
+<script type="text/javascript">
+var experimentActive = false;
+var testActive = false;
+var times = new Array();
+var lastChanged;
+var isCircle;		//0:rectangle, 1:circle
+var error = 0;
+var total = 0;
+
+
+function startExperiment(){
+	experimentActive = true;
+	document.getElementById("time").innerHTML = "";
+	document.getElementById("count").innerHTML = "";
+	document.getElementById("mean").innerHTML = "";
+	document.getElementById("sd").innerHTML = "";
+	document.getElementById("debug").innerHTML = "startExperiment";
+	document.getElementById("instruction").innerHTML = "Press SPACE only when a square changes! Press 'b' for break!";
+	startTest();
+}
+
+function startTest(){
+	clearCanvas();
+	total++;
+	document.getElementById("debug").innerHTML = "total:"+total+", square:"+times.length+", circle:"+(total-times.length);
+	timeInSeconds = Math.random()*4+2;	//2~6s
+	window.setTimeout("showStimulus()", timeInSeconds*1000);
+}
+
+function showStimulus(){
+	testActive = true;
+	lastChanged = new Date().getTime();
+	isCircle = Math.round(Math.random());
+	if (isCircle == 1 && experimentActive){
+		draw(isCircle, Math.random()*200+150);
+		window.setTimeout("startTest();", 3000);
+	}
+	else draw(isCircle, Math.random()*200+150);
+}
+
+function stopTest(){
+	var currTime = new Date().getTime();
+	var deltaTime = currTime - lastChanged;
+	times.push(deltaTime);
+	document.getElementById("time").innerHTML = deltaTime + "ms";
+	testActive = false;
+	startTest();
+}
+
+function stopExperiment(){
+	testActive = false;
+	var meanDeltaTime = 0.0;
+	for (var i = 0; i < times.length; ++i) {
+		meanDeltaTime += times[i]; }
+		meanDeltaTime = Math.round(meanDeltaTime / times.length);
+		var standardDerivation = 0.0;
+		for (var i = 0; i < times.length; ++i) {
+			var diff = (times[i] - meanDeltaTime);
+			standardDerivation += diff * diff;
+		}
+		standardDerivation = Math.round(Math.sqrt(standardDerivation / times.length));
+		document.getElementById("count").innerHTML = "Total: "+total+" times, Squares Count: "+times.length+" times, Circles count: "+(total-times.length)+" times";
+		document.getElementById("mean").innerHTML = "Mean: " + meanDeltaTime + "ms";
+		document.getElementById("sd").innerHTML = "SD: " + standardDerivation + "ms";
+		document.getElementById("er").innerHTML = "Error rate: " + error*100/total + "%, Errors count: "+error+" times";
+		document.getElementById("debug").innerHTML = "";
+		document.getElementById("instruction").innerHTML = "Press SPACE to start!";
+		times = [];
+		experimentActive = false;
+}
+
+function draw(isCircle, size){
+	var canvas = document.getElementById('canvas');
+	if (canvas.getContext){
+		var ctx = canvas.getContext('2d');	//context
+		var X = canvas.width/2;
+		var Y = canvas.height/2;
+		if (isCircle == 1){
+			var R = size/2;
+			ctx.fillStyle = "#000000";
+			ctx.beginPath();
+			ctx.arc(X,Y,R,0,2*Math.PI);
+			ctx.fill();
+		}
+		else {
+			ctx.fillStyle = "#000000";
+			ctx.beginPath();
+			ctx.rect(X-size/2,Y-size/2,size,size);
+			ctx.fill();
+		}
+	}
+}
+
+function clearCanvas(){
+	var canvas = document.getElementById('canvas');
+		if (canvas.getContext){
+			var ctx = canvas.getContext('2d');	//context
+			ctx.clearRect(0,0,canvas.width,canvas.height);
+		}
+}
+
+document.onkeydown = onKey;
+
+function onKey(e) {
+	if (e == null)
+	{e = window.event;}
+	switch (e.which || e.charCode || e.keyCode) {
+		case 32: // space
+			if (!experimentActive) {
+				startExperiment();
+			}
+			else {
+				if (testActive && isCircle==0) stopTest();
+				else error++;
+			}
+			break;
+		case 65: //a
+			if(experimentActive){
+			stopExperiment();
+			}
+			break;
+		case 66: // b
+			break;		// here you can extend... alert("pressed the b key");
+	}
+}
+
+</script>
+<h1><p id="text">User Study</p></h1>
+<canvas id="canvas" width="500" height="500"></canvas>
+<h1 id="instruction">Press SPACE to start!</h1>
+<p>
+<p id="time"></p> <p id="count"></p> <p id="mean"></p> <p id="sd"></p> <p id="er"></p><p id="debug"></p></body>
+</html>
