@@ -11,7 +11,7 @@
         var times = new Array();
         var lastChanged;
         var count = 0;
-        var num = 5;
+        var num = 2;
         var error_img;
         var error_snd;
         var error_rate_img;
@@ -110,7 +110,7 @@
             }
             standardDerivation_img = Math.round(Math.sqrt(standardDerivation_img / num));
             standardDerivation_snd = Math.round(Math.sqrt(standardDerivation_snd / num));
-            
+
             error_rate_img = error_img * 100 / num;
             error_rate_snd = error_snd * 100 / num;
 
@@ -134,7 +134,7 @@
                     case 32: // space
                         if (!experimentActive) {
                             startExperiment();
-                            
+
                         } else {
                             if (testActive) {
                                 ++count;
@@ -191,6 +191,33 @@
             }
         }
 
+        function WriteToFile() {
+            var age = document.getElementById("age").value;
+            var gender = document.getElementById("gender").value;
+            var name = document.getElementById("name").value;
+            var text = "Age Gender  Mean(img)   Mean(snd)  SD(img) SD(snd)  Total   Error(img)   Error(snd)   Error rate(img)  Error rate(snd)\n" + age + '\t' + gender + '\t' + meanDeltaTime_img + '\t\t\t' + meanDeltaTime_snd + '\t\t\t' + standardDerivation_img + '\t\t' + standardDerivation_snd + '\t\t' + num + '\t\t' + error_img + '\t\t\t\t' + error_snd + '\t\t\t' + error_rate_img.toFixed(2) + '\t\t\t' +error_rate_snd.toFixed(2) + '\n';
+
+            for (i = 0; i < times.length; i++) {
+                text = text + (i + 1) + ". " + times[i] + '\n';
+            }
+
+            var date = new Date();
+            var month = date.getMonth() + 1;
+            var day = date.getDate();
+            var hours = date.getHours();
+            var minutes = date.getMinutes();
+            var seconds = date.getSeconds();
+            var filename = date.getFullYear() + "-" + month + "-" + day + "-" + hours + "-" + minutes + "-" + seconds + "-D1-" + name;
+
+            var element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('download', filename);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
     </script>
     <h1>
         <p id="text">User Study</p>
@@ -207,6 +234,13 @@
         <p id="sd"></p>
         <p id="er"></p>
     </p>
+    <div id="createRp">
+        Your name: <input type="text" id="name" size="5"> Your age: <input type="text" id="age" size="3"> Your gender: <select name="gender" id="gender" value="male">
+                    <option value="male">male</option>
+                    <option value="female">female</option>
+                </select>
+        <input type="button" onclick="WriteToFile()" value="submit test report!">
+    </div>
 </body>
 
 </html>

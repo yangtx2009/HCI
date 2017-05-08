@@ -325,7 +325,7 @@
             var hours = date.getHours();
             var minutes = date.getMinutes();
             var seconds = date.getSeconds();
-            var filename = date.getFullYear() + "-" + month + "-" + day + "-" + hours + "-" + minutes + "-" + seconds + "-" + name;
+            var filename = date.getFullYear() + "-" + month + "-" + day + "-" + hours + "-" + minutes + "-" + seconds + "-D4-" + name;
 
             var element = document.createElement('a');
             element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
@@ -372,7 +372,7 @@
                     <option value="male">male</option>
                     <option value="female">female</option>
                 </select>
-                <input type="button" onclick="WriteToFile()" value="submit test report!">
+                <input type="button" onclick="WriteToFile()" value="Submit test report!">
             </div>
 
         </div>
