@@ -1,283 +1,347 @@
 <html>
+
 <head>
-<title>Human Capabilities - Reaction test</title> </head>
+    <title>Human Capabilities - Reaction test</title>
+</head>
 <style>
-    *{
-        margin:0;
-        padding:0;
-        background-color:rgb(51,166,213);
+    * {
+        margin: 0;
+        padding: 0;
+        background-color: rgb(51, 166, 213);
     }
-    #box{
+    
+    #box {
         display: flex;
         flex-direction: column;
         height: 100%;
         margin: 0;
     }
-    header{
+    
+    header {
         background-color: black;
         width: 100%;
         height: 90px;
-
     }
-    header h1{
+    
+    header h1 {
         font-family: sans-serif;
         font-size: 60;
         position: relative;
         left: 10px;
         height: inherit;
         width: 90%;
-        color: rgb(250,250,250);
+        color: rgb(250, 250, 250);
         background-color: black;
         text-shadow: dimgray 0.11em 0.05em 0;
     }
+    
     #content {
         height: 250px;
         width: 100%;
         color: white;
-
     }
-    #content_left{
+    
+    #content_left {
         float: left;
         width: 50%;
         height: 100%;
     }
-    #content_right{
+    
+    #content_right {
         float: right;
         width: 50%;
         height: 100%;
     }
-    #qa_title{
+    
+    #qa_title {
         width: 100%;
         height: 125px;
         line-height: 125px;
         text-align: center;
     }
-    #question{
+    
+    #question {
         width: 100%;
         height: 125px;
         line-height: 125px;
         text-align: center;
     }
-    #answer_layout{
+    
+    #answer_layout {
         display: flex;
         flex-direction: row;
     }
-    #answer{
+    
+    #answer {
         width: 50%;
         height: 125px;
         line-height: 125px;
         text-align: center;
     }
-    #img{
-        width:125px;
+    
+    #img {
+        width: 125px;
         height: 125px;
         background: url(./correct.png) no-repeat center;
         visibility: hidden;
     }
-    #infotable{
+    
+    #infotable {
         text-align: center;
-        background-color:cornflowerblue;
+        background-color: cornflowerblue;
         color: white;
         height: 50px;
         line-height: 50px;
     }
-    #instruction{
-        background-color:rgb(30,150,200);
+    
+    #instruction {
+        background-color: rgb(30, 150, 200);
     }
-    #result{
-        flex-grow: 1;               /*fill the rest space*/
+    
+    #result {
+        flex-grow: 1;
+        /*fill the rest space*/
         text-align: center;
         color: white;
-        background-color: rgb(30,150,200);
+        background-color: rgb(30, 150, 200);
         height: 100%;
     }
-    #time{
-        background-color: rgb(30,150,200);
-        height: 100px;
-        line-height: 100px;
+    
+    #time {
+        background-color: rgb(30, 150, 200);
+        height: 80px;
+        line-height: 80px;
         text-align: center;
     }
-    #count{
-        background-color: rgb(30,150,200);
-        height: 100px;
-        line-height: 100px;
+    
+    #count {
+        background-color: rgb(30, 150, 200);
+        height: 80px;
+        line-height: 80px;
         text-align: center;
     }
-    #mean{
-        background-color: rgb(30,150,200);
-        height: 100px;
-        line-height: 100px;
+    
+    #mean {
+        background-color: rgb(30, 150, 200);
+        height: 80px;
+        line-height: 80px;
         text-align: center;
     }
-    #sd{
-        background-color: rgb(30,150,200);
-        height: 100px;
-        line-height: 100px;
+    
+    #sd {
+        background-color: rgb(30, 150, 200);
+        height: 80px;
+        line-height: 80px;
         text-align: center;
     }
-    #er{
-        background-color: rgb(30,150,200);
-        height: 100px;
-        line-height: 100px;
+    
+    #er {
+        background-color: rgb(30, 150, 200);
+        height: 80px;
+        line-height: 80px;
         text-align: center;
     }
-    #debug{
-        background-color: rgb(30,150,200);
-        height: 100px;
-        line-height: 100px;
+    
+    #debug {
+        background-color: rgb(30, 150, 200);
+        height: 80px;
+        line-height: 80px;
         text-align: center;
     }
+    
+    #createRp {
+        background-color: rgb(30, 150, 200);
+        height: 80px;
+        line-height: 80px;
+        text-align: center;
+    }
+
 </style>
 
 <body>
-<script type="text/javascript">
-var experimentActive = false;
-var testActive = false;
-var times = new Array();
-var lastChanged;
-var error = 0;
-var total = 0;
-var countries = new Array("Australia","Austria","Belgium","Brazil","Canada","Chile","China","France",
-"Germany","Great Britain","Greece","India","Italy","Japan","South Korea","Libya","Malaysia","Mexico","Netherlands","New Zealand","Norway",
-"Pakistan","Portugal","South Africa","Spain","Sweden","Thailand","Turkey","Ukraine","United Kingdom","United States");
-var cities = new Array("Athens","Canberra","Vienna","Bangkok","Kiev","Madrid","Lisbon","Berlin","Paris","Beijing","Tokyo","Seoul","New Delhi","Washington, D.C.","Oslo","Islamabad","NewYork","Brussels","Stockholm","Jakarta","Amsterdam",
-"Ankara","Barcelona","Stuttgart","Munich","Shanghai","Sidney","Prague","London","California");
-var isCity;
+    <script type="text/javascript">
+        var experimentActive = false;
+        var testActive = false;
+        var times = new Array();
+        var lastChanged;
+        var error = 0;
+        var total = 0;
+        var error_rate;
+        var meanDeltaTime;
+        var standardDerivation;
+        var countries = new Array("Australia", "Austria", "Belgium", "Brazil", "Canada", "Chile", "China", "France",
+            "Germany", "Great Britain", "Greece", "India", "Italy", "Japan", "South Korea", "Libya", "Malaysia", "Mexico", "Netherlands", "New Zealand", "Norway",
+            "Pakistan", "Portugal", "South Africa", "Spain", "Sweden", "Thailand", "Turkey", "Ukraine", "United Kingdom", "United States");
+        var cities = new Array("Athens", "Canberra", "Vienna", "Bangkok", "Kiev", "Madrid", "Lisbon", "Berlin", "Paris", "Beijing", "Tokyo", "Seoul", "New Delhi", "Washington, D.C.", "Oslo", "Islamabad", "NewYork", "Brussels", "Stockholm", "Jakarta", "Amsterdam",
+            "Ankara", "Barcelona", "Stuttgart", "Munich", "Shanghai", "Sidney", "Prague", "London", "California");
+        var isCity;
 
-function startExperiment() {
-	experimentActive = true;
-	document.getElementById("time").innerHTML = "";
-	document.getElementById("count").innerHTML = "";
-	document.getElementById("mean").innerHTML = "";
-	document.getElementById("sd").innerHTML = "";
-	document.getElementById("er").innerHTML = "";
-	document.getElementById("debug").innerHTML = "";
-    document.getElementById("question").innerHTML = "";
-    document.getElementById("answer").innerHTML = "";
-	document.getElementById("instruction").innerHTML = "Press 't' when a country name occurs. Press 'f' when a city name occurs. Press 'a' for results. Press 'b' for break!";
-	startTest();
-}
+        function startExperiment() {
+            experimentActive = true;
+            times = [];
+            document.getElementById("time").innerHTML = "";
+            document.getElementById("count").innerHTML = "";
+            document.getElementById("mean").innerHTML = "";
+            document.getElementById("sd").innerHTML = "";
+            document.getElementById("er").innerHTML = "";
+            document.getElementById("debug").innerHTML = "";
+            document.getElementById("question").innerHTML = "";
+            document.getElementById("answer").innerHTML = "";
+            document.getElementById("instruction").innerHTML = "Press 't' when a country name occurs. Press 'f' when a city name occurs. Press 'a' for results. Press 'b' for break!";
+            document.getElementById("img").style.visibility = "hidden";
+            startTest();
+        }
 
-function startTest() {
-	timeInSeconds = Math.random() * 4 + 2; // 2~6s
-	window.setTimeout("showStimulus()", timeInSeconds * 1000);
-}
+        function startTest() {
+            document.getElementById("debug").innerHTML = "total: " + total + " times, error: " + error + " times";
+            timeInSeconds = Math.random() * 4 + 2; // 2~6s
+            window.setTimeout("showStimulus()", timeInSeconds * 1000);
+        }
 
-function showStimulus() {
-	testActive = true;
-    document.getElementById("img").style.visibility = "hidden";
-    document.getElementById("answer").innerHTML = "";
-	isCity = Math.round(Math.random());
-	lastChanged = new Date().getTime();
-	if(isCity ==1){
-		document.getElementById("question").innerHTML = cities[Math.round(Math.random()*cities.length)];
-	}
-	else{
-		document.getElementById("question").innerHTML = countries[Math.round(Math.random()*countries.length)];
-	}
-}
+        function showStimulus() {
+            if (experimentActive) {
+                testActive = true;
+                document.getElementById("img").style.visibility = "hidden";
+                document.getElementById("answer").innerHTML = "";
+                isCity = Math.round(Math.random()); /*[0 1)*/
+                lastChanged = new Date().getTime();
+                if (isCity == 1) {
+                    document.getElementById("question").innerHTML = cities[Math.round(Math.random() * (cities.length - 1))];
+                } else {
+                    document.getElementById("question").innerHTML = countries[Math.round(Math.random() * (countries.length - 1))];
+                }
+            }
+        }
 
-function stopTest() {
-	var currTime = new Date().getTime();
-	var deltaTime = currTime - lastChanged;
-	times.push(deltaTime);
-	document.getElementById("time").innerHTML = deltaTime + "ms";
-	testActive = false;
-	startTest();
-}
+        function stopTest() {
+            var currTime = new Date().getTime();
+            var deltaTime = currTime - lastChanged;
+            times.push(deltaTime);
+            document.getElementById("time").innerHTML = deltaTime + "ms";
+            testActive = false;
+            startTest();
+        }
 
-function stopExperiment() {
-	testActive = false;
-	var meanDeltaTime = 0.0;
-	var error_rate = error*100/total;
-	for (var i = 0; i < times.length; ++i) {
-		meanDeltaTime += times[i];
-	}
-	meanDeltaTime = Math.round(meanDeltaTime / times.length);
-	var standardDerivation = 0.0;
-	for (var i = 0; i < times.length; ++i) {
-		var diff = (times[i] - meanDeltaTime);
-		standardDerivation += diff * diff;
-	}
-	standardDerivation = Math.round(Math.sqrt(standardDerivation / times.length));
-	document.getElementById("count").innerHTML = "Total answers: "+total+" times, Right answers: "+times.length+" times";
-	document.getElementById("mean").innerHTML = "Mean: "+meanDeltaTime + "ms";
-	document.getElementById("sd").innerHTML = "SD: "+standardDerivation + "ms";
-	document.getElementById("er").innerHTML = "Errors count: "+error+" times, Error rate: "+error_rate.toFixed(2)+"%"
-	document.getElementById("instruction").innerHTML = "Press SPACE to start!";
-	times = [];
-	experimentActive = false;
-}
+        function stopExperiment() {
+            testActive = false;
+            experimentActive = false;
+            meanDeltaTime = 0.0;
+            error_rate = error * 100 / total;
+            for (var i = 0; i < times.length; ++i) {
+                meanDeltaTime += times[i];
+            }
+            meanDeltaTime = Math.round(meanDeltaTime / times.length);
+            standardDerivation = 0.0;
+            for (var i = 0; i < times.length; ++i) {
+                var diff = (times[i] - meanDeltaTime);
+                standardDerivation += diff * diff;
+            }
+            standardDerivation = Math.round(Math.sqrt(standardDerivation / times.length));
+            document.getElementById("count").innerHTML = "Total answers: " + total + " times, Right answers: " + times.length + " times";
+            document.getElementById("mean").innerHTML = "Mean: " + meanDeltaTime + "ms";
+            document.getElementById("sd").innerHTML = "SD: " + standardDerivation + "ms";
+            document.getElementById("er").innerHTML = "Errors count: " + error + " times, Error rate: " + error_rate.toFixed(2) + "%"
+            document.getElementById("instruction").innerHTML = "Press SPACE to start!";
 
-document.onkeydown = onKey;
+        }
 
-function onKey(e) {
-	if (e == null)
-	{e = window.event;}
+        document.onkeydown = onKey;
 
-	switch (e.which || e.charCode || e.keyCode) {
-		case 32:	//space
-			if (!experimentActive) {startExperiment();}
-			break;
-		case 84: 	//t
-            document.getElementById("answer").innerHTML = "true";
-			if (!experimentActive) {}
-			else {
-				total++;
-				if (testActive) {
-					if (isCity == 0){
-						document.getElementById("img").style.backgroundImage = "url(./correct.png)";
-                        document.getElementById("img").style.visibility = "visible";
-						stopTest();
-					}
-					else{
-                        document.getElementById("img").style.backgroundImage = "url(./error.png)";
-                        document.getElementById("img").style.visibility = "visible";
-						error++;
-                        startTest();
-					}
-				}
-				else
-					error++;
-			}
-			break;
-		case 70:	//f
-			document.getElementById("answer").innerHTML = "false";
-			if (!experimentActive) {}
-			else {
-				total++;
-				if (testActive) {
-					if (isCity == 1){
-						document.getElementById("img").style.backgroundImage = "url(./correct.png)";
-                        document.getElementById("img").style.visibility = "visible";
-						stopTest();
-					}
-					else{
-                        document.getElementById("img").style.backgroundImage = "url(./error.png)";
-                        document.getElementById("img").style.visibility = "visible";
-						error++;
-                        startTest();
-					}
-				}
-				else
-					error++;
-			}
-			break;
-		case 65:	//a
-			document.getElementById("answer").innerHTML = "Accomplish the test!";
-			if (experimentActive)
-				stopExperiment();
-			break;
-		case 66: 	// b
-			document.getElementById("answer").innerHTML = "Break!";
-			break;		// here you can extend... alert("pressed the b key");
-	}
-}
+        function onKey(e) {
+            if (e == null) {
+                e = window.event;
+            }
 
-</script>
+            switch (e.which || e.charCode || e.keyCode) {
+                case 32: //space
+                    if (!experimentActive) {
+                        startExperiment();
+                    }
+                    break;
+                case 84: //t
+                    document.getElementById("answer").innerHTML = "true";
+                    if (!experimentActive) {} else {
+                        total++;
+                        if (testActive) {
+                            if (isCity == 0) {
+                                document.getElementById("img").style.backgroundImage = "url(./correct.png)";
+                                document.getElementById("img").style.visibility = "visible";
+                                stopTest();
+                            } else {
+                                document.getElementById("img").style.backgroundImage = "url(./error.png)";
+                                document.getElementById("img").style.visibility = "visible";
+                                error++;
+                                startTest();
+                            }
+                        } else
+                            error++;
+                    }
+                    break;
+                case 70: //f
+                    document.getElementById("answer").innerHTML = "false";
+                    if (!experimentActive) {} else {
+                        total++;
+                        if (testActive) {
+                            if (isCity == 1) {
+                                document.getElementById("img").style.backgroundImage = "url(./correct.png)";
+                                document.getElementById("img").style.visibility = "visible";
+                                stopTest();
+                            } else {
+                                document.getElementById("img").style.backgroundImage = "url(./error.png)";
+                                document.getElementById("img").style.visibility = "visible";
+                                error++;
+                                startTest();
+                            }
+                        } else
+                            error++;
+                    }
+                    break;
+                case 65: //a
+                    document.getElementById("answer").innerHTML = "Accomplish the test!";
+                    if (experimentActive)
+                        stopExperiment();
+                    break;
+                case 66: // b
+                    document.getElementById("answer").innerHTML = "Break!";
+                    alert("You have press the b key to break the test!");
+                    break; // here you can extend... alert("pressed the b key");
+            }
+        }
+
+        function WriteToFile() {
+            var age = document.getElementById("age").value;
+            var gender = document.getElementById("gender").value;
+            var name = document.getElementById("name").value;
+            var text = "Age Gender  Mean    SD  Total   Error   Error rate\n" + age + '\t' + gender + '\t' + meanDeltaTime + '\t' + standardDerivation + '\t' + total + '\t\t' + error + '\t\t' + error_rate.toFixed(2) + '\n';
+            document.getElementById("debug").innerHTML = text;
+            
+            for (i=0;i<times.length;i++){
+                text = text + (i+1) +". " + times[i] +'\n';
+            }
+            
+            var date = new Date();
+            var month = date.getMonth() + 1;
+            var day = date.getDate();
+            var hours = date.getHours();
+            var minutes = date.getMinutes();
+            var seconds = date.getSeconds();
+            var filename = date.getFullYear() + "-" + month + "-" + day + "-" + hours + "-" + minutes + "-" + seconds + "-" + name;
+
+            var element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('download', filename);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+    </script>
 
     <div id="box">
-        <header><h1><img src="uni-logo.gif" style="height:80px; vertical-align:middle; background-color: black;">User Study</h1></header>
+        <header>
+            <h1><img src="uni-logo.gif" style="height:80px; vertical-align:middle; background-color: black;">User Study</h1>
+        </header>
         <div id="content">
             <div id="content_left">
                 <h1 id="qa_title">Country?:</h1>
@@ -296,7 +360,6 @@ function onKey(e) {
         <div id="infotable">
             <p id="instruction">Press SPACE to start!</p>
         </div>
-
         <div id="result">
             <div id="time"></div>
             <div id="count"></div>
@@ -304,9 +367,18 @@ function onKey(e) {
             <div id="sd"></div>
             <div id="er"></div>
             <div id="debug"></div>
+            <div id="createRp">
+                Your name: <input type="text" id="name" size="5"> Your age: <input type="text" id="age" size="3"> Your gender: <select name="gender" id="gender" value="male">
+                    <option value="male">male</option>
+                    <option value="female">female</option>
+                </select>
+                <input type="button" onclick="WriteToFile()" value="submit test report!">
+            </div>
+
         </div>
     </div>
 
 
 </body>
+
 </html>

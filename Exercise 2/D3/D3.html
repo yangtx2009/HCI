@@ -1,148 +1,166 @@
 <html>
+
 <head>
-<title>Human Capabilities - Reaction test</title> </head>
+    <title>Human Capabilities - Reaction test</title>
+</head>
+
 <body>
-<script type="text/javascript">
-var experimentActive = false;
-var testActive = false;
-var times = new Array();
-var lastChanged;
-var error = 0;
-var total = 0;
-var countries = new Array("Australia","Austria","Belgium","Brazil","Canada","Chile","China","France",
-"Germany","Great Britain","Greece","India","Italy","Japan","South Korea","Libya","Malaysia","Mexico","Netherlands","New Zealand","Norway",
-"Pakistan","Portugal","South Africa","Spain","Sweden","Thailand","Turkey","Ukraine","United Kingdom","United States");
-var cities = new Array("Athens","Canberra","Vienna","Bangkok","Kiev","Madrid","Lisbon","Berlin","Paris","Beijing","Tokyo",
-"Seoul","New Delhi","Washington, D.C.","Oslo","Islamabad","New York","Brussels","Stockholm","Jakarta","Amsterdam",
-"Ankara","Barcelona","Stuttgart","Munich","Shanghai","Sidney","Prague","London","California");
-var isCity;
+    <script type="text/javascript">
+        var experimentActive = false;
+        var testActive = false;
+        var times = new Array();
+        var lastChanged;
+        var error = 0;
+        var error_rate;
+        var meanDeltaTime;
+        var standardDerivation;
+        var total = 0;
+        var countries = new Array("Australia", "Austria", "Belgium", "Brazil", "Canada", "Chile", "China", "France",
+            "Germany", "Great Britain", "Greece", "India", "Italy", "Japan", "South Korea", "Libya", "Malaysia", "Mexico", "Netherlands", "New Zealand", "Norway",
+            "Pakistan", "Portugal", "South Africa", "Spain", "Sweden", "Thailand", "Turkey", "Ukraine", "United Kingdom", "United States");
+        var cities = new Array("Athens", "Canberra", "Vienna", "Bangkok", "Kiev", "Madrid", "Lisbon", "Berlin", "Paris", "Beijing", "Tokyo",
+            "Seoul", "New Delhi", "Washington, D.C.", "Oslo", "Islamabad", "New York", "Brussels", "Stockholm", "Jakarta", "Amsterdam",
+            "Ankara", "Barcelona", "Stuttgart", "Munich", "Shanghai", "Sidney", "Prague", "London", "California");
+        var isCity;
 
-function startExperiment() {
-	experimentActive = true;
-	document.getElementById("time").innerHTML = "";
-	document.getElementById("count").innerHTML = "";
-	document.getElementById("mean").innerHTML = "";
-	document.getElementById("sd").innerHTML = "";
-	document.getElementById("er").innerHTML = "";
-	document.getElementById("debug").innerHTML = "";
-	document.getElementById("instruction").innerHTML = "Press 't' when a country name occurs. Press 'f' when a city name occurs. Press 'a' for results. Press 'b' for break!";
-	startTest();
-}
+        function startExperiment() {
+            experimentActive = true;
+            times = [];
+            document.getElementById("time").innerHTML = "";
+            document.getElementById("count").innerHTML = "";
+            document.getElementById("mean").innerHTML = "";
+            document.getElementById("sd").innerHTML = "";
+            document.getElementById("er").innerHTML = "";
+            document.getElementById("debug").innerHTML = "";
+            document.getElementById("instruction").innerHTML = "Press 't' when a country name occurs. Press 'f' when a city name occurs. Press 'a' for results. Press 'b' for break!";
+            startTest();
+        }
 
-function startTest() {
-	timeInSeconds = Math.random() * 4 + 2; // 2~6s
-	window.setTimeout("showStimulus()", timeInSeconds * 1000);
-}
+        function startTest() {
+            document.getElementById("debug").innerHTML = "total: " + total + " times, error: " + error + " times";
+            timeInSeconds = Math.random() * 4 + 2; // 2~6s
+            window.setTimeout("showStimulus()", timeInSeconds * 1000);
+        }
 
-function showStimulus() {
-	testActive = true;
-	isCity = Math.round(Math.random());
-	lastChanged = new Date().getTime();
-	if(isCity ==1){
-		document.getElementById("question").innerHTML = cities[Math.round(Math.random()*cities.length)];
-	}
-	else{
-		document.getElementById("question").innerHTML = countries[Math.round(Math.random()*countries.length)];
-	}
-}
+        function showStimulus() {
+            if (experimentActive) {
+                testActive = true;
+                document.getElementById("answer").innerHTML = "";
+                isCity = Math.round(Math.random());
+                lastChanged = new Date().getTime();
+                if (isCity == 1) {
+                    document.getElementById("question").innerHTML = cities[Math.round(Math.random() * (cities.length - 1))];
+                } else {
+                    document.getElementById("question").innerHTML = countries[Math.round(Math.random() * (countries.length - 1))];
+                }
+            }
+        }
 
-function stopTest() {
-	var currTime = new Date().getTime();
-	var deltaTime = currTime - lastChanged;
-	times.push(deltaTime);
-	document.getElementById("time").innerHTML = deltaTime + "ms";
-	testActive = false;
-	startTest();
-}
+        function stopTest() {
+            var currTime = new Date().getTime();
+            var deltaTime = currTime - lastChanged;
+            times.push(deltaTime);
+            document.getElementById("time").innerHTML = deltaTime + "ms";
+            testActive = false;
+            startTest();
+        }
 
-function stopExperiment() {
-	testActive = false;
-	var meanDeltaTime = 0.0;
-	var error_rate = error*100/total;
-	for (var i = 0; i < times.length; ++i) {
-		meanDeltaTime += times[i];
-	}
-	meanDeltaTime = Math.round(meanDeltaTime / times.length);
-	var standardDerivation = 0.0;
-	for (var i = 0; i < times.length; ++i) {
-		var diff = (times[i] - meanDeltaTime);
-		standardDerivation += diff * diff;
-	}
-	standardDerivation = Math.round(Math.sqrt(standardDerivation / times.length));
-	document.getElementById("count").innerHTML = "Total answers: "+total+" times, Right answers: "+times.length+" times";
-	document.getElementById("mean").innerHTML = "Mean: "+meanDeltaTime + "ms";
-	document.getElementById("sd").innerHTML = "SD: "+standardDerivation + "ms";
-	document.getElementById("er").innerHTML = "Errors count: "+error+" times, Error rate: "+error_rate.toFixed(2)+"%"
-	document.getElementById("instruction").innerHTML = "Press SPACE to start!";
-	times = [];
-	experimentActive = false;
-}
+        function stopExperiment() {
+            testActive = false;
+            experimentActive = false;
+            meanDeltaTime = 0.0;
+            error_rate = error * 100 / total;
+            for (var i = 0; i < times.length; ++i) {
+                meanDeltaTime += times[i];
+            }
+            meanDeltaTime = Math.round(meanDeltaTime / times.length);
+            standardDerivation = 0.0;
+            for (var i = 0; i < times.length; ++i) {
+                var diff = (times[i] - meanDeltaTime);
+                standardDerivation += diff * diff;
+            }
+            standardDerivation = Math.round(Math.sqrt(standardDerivation / times.length));
+            document.getElementById("count").innerHTML = "Total answers: " + total + " times, Right answers: " + times.length + " times";
+            document.getElementById("mean").innerHTML = "Mean: " + meanDeltaTime + "ms";
+            document.getElementById("sd").innerHTML = "SD: " + standardDerivation + "ms";
+            document.getElementById("er").innerHTML = "Errors count: " + error + " times, Error rate: " + error_rate.toFixed(2) + "%"
+            document.getElementById("instruction").innerHTML = "Press SPACE to start!";
+
+        }
 
 
-document.onkeydown = onKey;
+        document.onkeydown = onKey;
 
-function onKey(e) {
-	if (e == null)
-	{e = window.event;}
-	switch (e.which || e.charCode || e.keyCode) {
-		case 32:	//space
-			if (!experimentActive) {startExperiment();}
-			break;
-		case 84: 	//t
-			if (!experimentActive) {}
-			else {
-				total++;
-				if (testActive) {
-					if (isCity == 0){
-						document.getElementById("answer").innerHTML = "Answer: true		Correct!";
-						stopTest();
-					}
-					else{
-						document.getElementById("answer").innerHTML = "Answer: true		Uncorrect!";
-						error++;
-					}
-				}
-				else
-					error++;
-			}
-			break;
-		case 70:	//f
-			document.getElementById("answer").innerHTML = "Answer: false";
-			if (!experimentActive) {}
-			else {
-				total++;
-				if (testActive) {
-					if (isCity == 1){
-						document.getElementById("answer").innerHTML = "Answer: false	Correct!";
-						stopTest();
-					}
-					else{
-						document.getElementById("answer").innerHTML = "Answer: false	Uncorrect!";
-						error++;
-					}
-				}
-				else
-					error++;
-			}
-			break;
-		case 65:	//a
-			document.getElementById("answer").innerHTML = "Accomplish the test!";
-			//window.setTimeout(document.getElementById("answer").innerHTML = "",200);
-			if (experimentActive)
-				stopExperiment();
-			break;
-		case 66: 	// b
-			document.getElementById("answer").innerHTML = "Break!";
-			//window.setTimeout(document.getElementById("answer").innerHTML = "",200);
-			break;		// here you can extend... alert("pressed the b key");
-	}
-}
+        function onKey(e) {
+            if (e == null) {
+                e = window.event;
+            }
+            switch (e.which || e.charCode || e.keyCode) {
+                case 32: //space
+                    if (!experimentActive) {
+                        startExperiment();
+                    }
+                    break;
+                case 84: //t
+                    if (!experimentActive) {} else {
+                        total++;
+                        if (testActive) {
+                            if (isCity == 0) {
+                                document.getElementById("answer").innerHTML = "Answer: true		Correct!";
+                                stopTest();
+                            } else {
+                                document.getElementById("answer").innerHTML = "Answer: true		Uncorrect!";
+                                error++;
+                                startTest();
+                            }
+                        } else
+                            error++;
+                    }
+                    break;
+                case 70: //f
+                    document.getElementById("answer").innerHTML = "Answer: false";
+                    if (!experimentActive) {} else {
+                        total++;
+                        if (testActive) {
+                            if (isCity == 1) {
+                                document.getElementById("answer").innerHTML = "Answer: false	Correct!";
+                                stopTest();
+                            } else {
+                                document.getElementById("answer").innerHTML = "Answer: false	Uncorrect!";
+                                error++;
+                                startTest();
+                            }
+                        } else
+                            error++;
+                    }
+                    break;
+                case 65: //a
+                    document.getElementById("answer").innerHTML = "Accomplish the test!";
+                    //window.setTimeout(document.getElementById("answer").innerHTML = "",200);
+                    if (experimentActive)
+                        stopExperiment();
+                    break;
+                case 66: // b
+                    document.getElementById("answer").innerHTML = "Break!";
+                    alert("You have press the b key to break the test!");
+                    break; // here you can extend... alert("pressed the b key");
+            }
+        }
 
-</script>
-<h1><p id="text">User Study</p></h1>
-<h1 id="question">Question:</h1>
-<h1 id="answer">Answer:</h1>
-<h1 id="instruction">Press SPACE to start!</h1>
-<p>
-<p id="time"></p> <p id="count"></p> <p id="mean"></p> <p id="sd"></p> <p id="er"></p> <p id="debug"></p> </body>
+    </script>
+    <h1>
+        <p id="text">User Study</p>
+    </h1>
+    <h1 id="question">Question:</h1>
+    <h1 id="answer">Answer:</h1>
+    <h1 id="instruction">Press SPACE to start!</h1>
+    <p>
+        <p id="time"></p>
+        <p id="count"></p>
+        <p id="mean"></p>
+        <p id="sd"></p>
+        <p id="er"></p>
+        <p id="debug"></p>
+</body>
+
 </html>

@@ -8,12 +8,18 @@ var testActive = false;
 var times = new Array();
 var lastChanged;
 var isCircle;		//0:rectangle, 1:circle
-var error = 0;
-var total = 0;
+var error;
+var total;
+var error_rate;
+var meanDeltaTime;
+var standardDerivation;
 
 
 function startExperiment(){
 	experimentActive = true;
+    error = 0;
+    total = 0;
+    times = [];
 	document.getElementById("time").innerHTML = "";
 	document.getElementById("count").innerHTML = "";
 	document.getElementById("mean").innerHTML = "";
@@ -25,21 +31,23 @@ function startExperiment(){
 
 function startTest(){
 	clearCanvas();
-	total++;
-	document.getElementById("debug").innerHTML = "total:"+total+", square:"+times.length+", circle:"+(total-times.length);
+	document.getElementById("debug").innerHTML = "total:"+total+", square:"+times.length+", circle:"+(total-times.length)+", error:"+error;
 	timeInSeconds = Math.random()*4+2;	//2~6s
 	window.setTimeout("showStimulus()", timeInSeconds*1000);
 }
 
 function showStimulus(){
-	testActive = true;
-	lastChanged = new Date().getTime();
-	isCircle = Math.round(Math.random());
-	if (isCircle == 1 && experimentActive){
-		draw(isCircle, Math.random()*200+150);
-		window.setTimeout("startTest();", 3000);
-	}
-	else draw(isCircle, Math.random()*200+150);
+    if (experimentActive){
+        testActive = true;
+	   lastChanged = new Date().getTime();
+	   isCircle = Math.round(Math.random());
+	   if (isCircle == 1 && experimentActive){
+		  draw(isCircle, Math.random()*200+150);
+          total++;
+		  window.setTimeout("startTest();", 3000);
+	   }
+	   else draw(isCircle, Math.random()*200+150);
+    }
 }
 
 function stopTest(){
@@ -53,7 +61,8 @@ function stopTest(){
 
 function stopExperiment(){
 	testActive = false;
-	var meanDeltaTime = 0.0;
+    experimentActive = false;
+	meanDeltaTime = 0.0;
 	for (var i = 0; i < times.length; ++i) {
 		meanDeltaTime += times[i]; }
 		meanDeltaTime = Math.round(meanDeltaTime / times.length);
@@ -62,15 +71,14 @@ function stopExperiment(){
 			var diff = (times[i] - meanDeltaTime);
 			standardDerivation += diff * diff;
 		}
+        error_rate = error*100/total;
 		standardDerivation = Math.round(Math.sqrt(standardDerivation / times.length));
 		document.getElementById("count").innerHTML = "Total: "+total+" times, Squares Count: "+times.length+" times, Circles count: "+(total-times.length)+" times";
 		document.getElementById("mean").innerHTML = "Mean: " + meanDeltaTime + "ms";
 		document.getElementById("sd").innerHTML = "SD: " + standardDerivation + "ms";
-		document.getElementById("er").innerHTML = "Error rate: " + error*100/total + "%, Errors count: "+error+" times";
+		document.getElementById("er").innerHTML = "Error rate: " + error_rate.toFixed(2) + "%, Errors count: "+error+" times";
 		document.getElementById("debug").innerHTML = "";
 		document.getElementById("instruction").innerHTML = "Press SPACE to start!";
-		times = [];
-		experimentActive = false;
 }
 
 function draw(isCircle, size){
@@ -113,7 +121,7 @@ function onKey(e) {
 			if (!experimentActive) {
 				startExperiment();
 			}
-			else {
+			else { total++;
 				if (testActive && isCircle==0) stopTest();
 				else error++;
 			}
@@ -124,6 +132,9 @@ function onKey(e) {
 			}
 			break;
 		case 66: // b
+            experimentActive = false;
+            testActive = false;
+            alert("You have press the b key to break the test!");
 			break;		// here you can extend... alert("pressed the b key");
 	}
 }

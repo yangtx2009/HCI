@@ -1,0 +1,212 @@
+<html>
+
+<head>
+    <title>Human Capabilities - Reaction test</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+        var experimentActive = false;
+        var testActive = false;
+        var times = new Array();
+        var lastChanged;
+        var count = 0;
+        var num = 5;
+        var error_img;
+        var error_snd;
+        var error_rate_img;
+        var error_rate_snd;
+        var meanDeltaTime_img;
+        var meanDeltaTime_snd;
+        var standardDerivation_img;
+        var standardDerivation_snd;
+
+        function startExperiment() {
+            experimentActive = true;
+            times = [];
+            error_img = 0;
+            error_snd = 0;
+            document.getElementById("time").innerHTML = "";
+            document.getElementById("count").innerHTML = "";
+            //document.getElementById("mean").innerHTML = "";
+            document.getElementById("sd").innerHTML = "";
+            document.getElementById("er").innerHTML = "";
+            document.getElementById("instruction").innerHTML = "Press SPACE when the image \"Cow\" occurs! Press 'b' for break!";
+            startImageTest();
+        }
+
+        function startImageTest() {
+            changeImageState("hidden");
+            timeInSeconds = Math.random() * 4 + 2; // 2 - 6s
+            window.setTimeout("showImageStimulus()", timeInSeconds * 1000);
+        }
+
+        function showImageStimulus() {
+            testActive = true;
+            changeImageState("visible");
+        }
+
+        function changeImageState(imagestate) {
+            document.getElementById("img_cow").style.visibility = imagestate;
+            lastChanged = new Date().getTime();
+        }
+
+        function startSoundTest() {
+            timeInSeconds = Math.random() * 4 + 2; // 2 - 6s
+            window.setTimeout("showSoundStimulus()", timeInSeconds * 1000);
+        }
+
+        function showSoundStimulus() {
+            testActive = true;
+            document.getElementById("cow_moo").play();
+            lastChanged = new Date().getTime();
+        }
+
+        function stopImageTest() {
+            var currTime = new Date().getTime();
+            var deltaTime = currTime - lastChanged;
+            times.push(deltaTime);
+            document.getElementById("time").innerHTML = deltaTime + "ms";
+            testActive = false;
+            startImageTest();
+        }
+
+        function stopSoundTest() {
+            var currTime = new Date().getTime();
+            var deltaTime = currTime - lastChanged;
+            times.push(deltaTime);
+            document.getElementById("time").innerHTML = deltaTime + "ms";
+            testActive = false;
+            startSoundTest();
+        }
+
+        function stopExperiment() {
+            var currTime = new Date().getTime();
+            var deltaTime = currTime - lastChanged;
+            times.push(deltaTime);
+            document.getElementById("time").innerHTML = deltaTime + "ms";
+            testActive = false;
+            meanDeltaTime_img = 0.0;
+            meanDeltaTime_snd = 0.0;
+            for (var i = 0; i < num; ++i) {
+                meanDeltaTime_img += times[i];
+            }
+            for (var i = num; i < num * 2; ++i) {
+                meanDeltaTime_snd += times[i];
+
+            }
+            meanDeltaTime_img = Math.round(meanDeltaTime_img / num);
+            meanDeltaTime_snd = Math.round(meanDeltaTime_snd / num);
+
+            standardDerivation_img = 0.0;
+            standardDerivation_snd = 0.0;
+            for (var i = 0; i < num; ++i) {
+                var diff = (times[i] - meanDeltaTime_img);
+                standardDerivation_img += diff * diff;
+            }
+            for (var i = num; i < num * 2; ++i) {
+                var diff = (times[i] - meanDeltaTime_snd);
+                standardDerivation_snd += diff * diff;
+            }
+            standardDerivation_img = Math.round(Math.sqrt(standardDerivation_img / num));
+            standardDerivation_snd = Math.round(Math.sqrt(standardDerivation_snd / num));
+            
+            error_rate_img = error_img * 100 / num;
+            error_rate_snd = error_snd * 100 / num;
+
+            document.getElementById("count").innerHTML = "Count (for image and sound): " + num;
+            document.getElementById("mean").innerHTML = "Mean (for image): " + meanDeltaTime_img + "ms" + '\t' + "Mean (for sound):" + meanDeltaTime_snd + "ms";
+            document.getElementById("sd").innerHTML = "SD (for image): " + standardDerivation_img + "ms" + '\t' + "SD (for sound):" + standardDerivation_snd + "ms";
+            document.getElementById("er").innerHTML = "Error rate (for image): " + error_rate_img.toFixed(2) + "%" + '\t' + "Error rate (for sound): " + error_rate_snd.toFixed(2) + "%";
+            document.getElementById("instruction").innerHTML = "Press SPACE to start!";
+            experimentActive = false;
+            count = 0;
+        }
+
+        document.onkeydown = onKey;
+
+        function onKey(e) {
+            if (e == null) {
+                e = window.event;
+            }
+            if (count < num - 1) {
+                switch (e.which || e.charCode || e.keyCode) {
+                    case 32: // space
+                        if (!experimentActive) {
+                            startExperiment();
+                            
+                        } else {
+                            if (testActive) {
+                                ++count;
+                                stopImageTest();
+                            } else {
+                                error_img++;
+                            }
+                        }
+                        break;
+                    case 66: // b // here you can extend... alert("pressed the b key");
+                        break;
+                }
+            } else if (count == num - 1) {
+                switch (e.which || e.charCode || e.keyCode) {
+                    case 32: // space
+                        if (testActive) {
+                            count++;
+                            document.getElementById("instruction").innerHTML = "Press SPACE when the sound \"Moo\" occurs! Press 'b' for break!";
+                            stopSoundTest();
+                        } else {
+                            error_img++;
+                        }
+                        break;
+                    case 66:
+                        break;
+                }
+            } else if (count < num * 2 - 1) {
+
+                switch (e.which || e.charCode || e.keyCode) {
+                    case 32: // space
+                        if (testActive) {
+                            count++;
+                            stopSoundTest();
+                        } else {
+                            error_snd++;
+                        }
+                        break;
+                    case 66:
+                        break;
+                }
+            } else {
+                switch (e.which || e.charCode || e.keyCode) {
+                    case 32: // space
+                        if (testActive) {
+                            stopExperiment();
+                        } else {
+                            error_snd++;
+                        }
+                        break;
+                    case 66:
+                        alert("You have press the b key to break the test!");
+                        break;
+                }
+            }
+        }
+
+    </script>
+    <h1>
+        <p id="text">User Study</p>
+    </h1>
+    <img src="./cow.jpg" style='visibility:hidden' id="img_cow" />
+    <audio controls id="cow_moo" style="visibility:hidden">
+  <source src="./cow.mp3" type="audio/mp3" >
+</audio>
+    <h1 id="instruction">Press SPACE to start!</h1>
+    <p>
+        <p id="time"></p>
+        <p id="count"></p>
+        <p id="mean"></p>
+        <p id="sd"></p>
+        <p id="er"></p>
+    </p>
+</body>
+
+</html>
